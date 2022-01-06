@@ -1,406 +1,594 @@
 # Create main app tkinter frame.
-from tkinter import StringVar
-from src.app import account_value
+# from src.app import account_value
 import config
-import tkinter.font as tkFont
-import tkinter as tk
+from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Radiobutton, Listbox, Frame, messagebox
+from pathlib import Path
+from selenium import webdriver
+
+order_type = None
+
+try:
+    driver = webdriver.Chrome()
+    driver.get("https://www.tradingview.com/#signin")
+except Exception as e:
+    print('+ Error Involving Chrome Driver + \n')
+    print(str(e) + '\n')
+    print('Visit: https://github.com/Robswc/tradingview-trainer/wiki/Errors')
+    print('Report this error here: https://github.com/Robswc/tradingview-trainer/issues')
+    input()
+    quit()
 
 
-class Application(tk.Frame):
+class Application(Frame):
 
-    def __init__(self, master=None, bg=config.background_color):
+    def __init__(self, master=None, bg=config.bg_color):
         super().__init__(master)
 
+        self.entry_image_2 = None
+        self.save_report_image = None
+        self.next_button_image = None
+        self.cal_risk_image = None
+        self.short_button_image = None
+        self.image_5 = None
+        self.long_button_image = None
+        self.image_4 = None
+        self.image_3 = None
+        self.image_2 = None
+        self.image_1 = None
+        self.canvas = None
+        self.limit_price_entry = None
+        self.risk_entry = None
+        self.order_vol_entry = None
+        self.position_box = None
+        self.take_profit_entry = None
+        self.stop_loss_entry = None
+
+        self.market_radio = None
+        self.limit_radio = None
+
+        self.save_report_button = None
+        self.play_pause_button = None
+        self.next_button = None
+        self.cal_risk_button = None
+        self.short_button = None
+        self.long_button = None
+
+        self.OUTPUT_PATH = None
+        self.ASSETS_PATH = None
+        self.play_button = True
+
         self.master = master
-        self.master.configure(background="#1E1E1E")
+        self.master.configure(background=config.bg_color)
         self.pack()
         self.create_widgets()
-        self.limit_check()
 
-        # Set up StringVars that will be used.
-        self.ticker_value = StringVar()
-        self.account_value_text = StringVar()
-        self.account_value_text.set(str(account_value))
-        self.last_price_value = StringVar()
-        self.current_position_value = StringVar()
-        self.current_position_pnl = StringVar()
-        self.account_value_pnl = StringVar()
-        self.limit_price = StringVar()
-        self.order_type = StringVar(None, 'market')
+    def relative_to_assets(self, path: str) -> Path:
+        self.OUTPUT_PATH = Path(__file__).parent
+        self.ASSETS_PATH = self.OUTPUT_PATH / Path("./assets")
+        return self.ASSETS_PATH / Path(path)
 
-        # set fonts
-        self.font = tkFont.Font(family=config.font, weight=config.font_weight, size=config.font_size)
-        self.font_large = tkFont.Font(family=config.font, weight=config.font_weight, size=round(config.font_size * 1.5))
-        self.font_small = tkFont.Font(family=config.font, weight=config.font_weight, size=round(config.font_size * .66))
+    def switch_market_mode(self, market_mode):
+        if market_mode:
+            global order_type
+            order_type = 'market'
+            self.limit_price_entry.delete(0, 'end')
+            self.limit_price_entry.insert(0, "")
+            self.limit_price_entry.config(state="disabled")
+        else:
+            order_type = 'limit'
+            self.limit_price_entry.config(state="normal")
+
+    # Switch play pause button to play mode and pause mode
+    def switch_button(self):
+        # global play_button
+        # Determine if on/off
+        if self.play_button:
+            self.play_pause_button.config(image=self.pause_image)
+            self.play_button = False
+        else:
+            self.play_pause_button.config(image=self.play_image)
+            self.play_button = True
+
+    def show_error(self, cause, exception, message):
+        """
+        A method for showing errors
+        :param cause:
+        :param exception:
+        :param message:
+        """
+        messagebox.showerror(str(cause), str(str(exception) + '\n' + message))
+
+    def get_price_data(self):
+        try:
+            self.open_price = float(driver.find_element_by_xpath(config.open_price_xpath).text)
+            self.high_price = float(driver.find_element_by_xpath(config.high_price_xpath).text)
+            self.low_price = float(driver.find_element_by_xpath(config.low_price_xpath).text)
+            self.close_price = float(driver.find_element_by_xpath(config.close_price_xpath).text)
+            self.last_price = float(driver.find_element_by_xpath(config.last_price).text)
+        except:
+            self.show_error('Get data', 'Xpath error', 'failed to get data')
+
+    # Next bar action
+    def next_bar_action(self):
+
+        if self.play_button:
+            self.switch_button()
+        try:
+            driver.find_element_by_xpath(config.next_button_xpath).click()
+        except:
+            self.show_error('Next Bar', 'Xpath error', 'Please report your error')
+        self.get_price_data()
+
+        print(self.close_price)
 
     # Create tkinter widgets.
     def create_widgets(self):
 
-        # Global is_playing as it is used as a boolean and StringVar
-        global is_playing
-        is_playing = StringVar()
-        is_playing.set("▶")
+        self.canvas = Canvas(
+            bg=config.bg_color,
+            height=784,
+            width=424,
+            bd=0,
+            highlightthickness=0,
+            relief="ridge"
+        )
+        self.canvas.place(x=0, y=0)
 
-        # Create Ticker Label for Ticker
-        self.ticker_id = tk.Label(
-            self,
-            textvariable=self.ticker_value,
-            fg=config.color_white,
-            bg=config.background_color,
-            font=self.font_large
-        ).grid(row=0, column=0, columnspan=4, padx=33, sticky="nsew")
+        """
+            Images are Here
+        """
 
-        # Create a label to show the last price
-        self.last_price_label = tk.Label(
-            self,
-            textvariable=self.last_price_value,
-            bg=config.background_color,
-            fg=config.color_white,
-            font=self.font_large
-        ).grid(row=1, column=0, columnspan=4, sticky="nsew")
-
-        # Create a button to start the reply
-        self.play_button = tk.Button(
-            self,
-            textvariable=is_playing,
-            bg=config.button_color_light,
-            fg=config.color_grey,
-            borderwidth=0
+        self.image_1 = PhotoImage(
+            file=self.relative_to_assets("image_1.png"))
+        self.canvas.create_image(
+            162.83984375,
+            24.9375,
+            image=self.image_1
+        )
+        self.image_2 = PhotoImage(
+            file=self.relative_to_assets("image_2.png"))
+        self.canvas.create_image(
+            64.0,
+            29.0,
+            image=self.image_2
         )
 
-        self.play_button["command"] = self.play_replay
-        self.play_button.grid(row=2, column=0, columnspan=2, sticky="nsew")
-
-        # Create a button for progressing to next bar
-        self.next_button = tk.Button(self, text="▮▶", bg=config.button_color_light, fg=config.color_grey, borderwidth=0)
-        self.next_button["command"] = self.next_bar
-        self.next_button.grid(row=2, column=2, columnspan=2, sticky="nsew")
-
-        # Create a button for long orders
-        self.long_button = tk.Button(
-            self,
-            text="Long",
-            font=self.font,
-            bg=config.button_color,
-            fg=config.color_green,
-            borderwidth=0
+        self.image_3 = PhotoImage(
+            file=self.relative_to_assets("image_3.png"))
+        self.canvas.create_image(
+            197.8818359375,
+            42.7685546875,
+            image=self.image_3
         )
-        self.long_button["command"] = self.order_buy
-        self.long_button.grid(row=3, column=0, columnspan=2, sticky="nsew")
 
-        # Create a button for short orders
-        self.short_button = tk.Button(
-            self,
-            text="Short",
-            font=self.font,
-            bg=config.button_color,
-            fg=config.color_red,
-            borderwidth=0
+        self.image_4 = PhotoImage(
+            file=self.relative_to_assets("image_4.png"))
+        self.canvas.create_image(
+            204.0,
+            738.0,
+            image=self.image_4
         )
-        self.short_button["command"] = self.order_sell
-        self.short_button.grid(row=3, column=2, columnspan=2, sticky="nsew")
 
-        # Create radio buttons to toggle between limit orders and market orders
-        self.limit_radiobutton = tk.Radiobutton(
-            self,
-            bg=config.background_color,
-            fg=config.textarea_color,
-            selectcolor=config.background_color,
+        self.image_5 = PhotoImage(
+            file=self.relative_to_assets("image_5.png"))
+        self.canvas.create_image(
+            212.0,
+            769.0,
+            image=self.image_5
+        )
+
+        """
+            Buttons Are Here
+        """
+        # Long Button
+
+        self.long_button_image = PhotoImage(
+            file=self.relative_to_assets("button_1.png"))
+
+        self.long_button = Button(
+            image=self.long_button_image,
+            borderwidth=5,
+            highlightthickness=5,
+            command=lambda: print("button_1 clicked"),
+            relief="flat"
+        )
+        self.long_button.place(
+            x=46.0,
+            y=200.0,
+            width=159.0,
+            height=62.0
+        )
+        # Short Button
+        self.short_button_image = PhotoImage(
+            file=self.relative_to_assets("button_2.png"))
+        self.short_button = Button(
+            image=self.short_button_image,
+            borderwidth=5,
+            highlightthickness=5,
+            command=lambda: print("button_2 clicked"),
+            relief="flat"
+        )
+        self.short_button.place(
+            x=212.0,
+            y=200.0,
+            width=159.0,
+            height=62.0
+        )
+
+        # calculate Risk button
+
+        self.cal_risk_image = PhotoImage(
+            file=self.relative_to_assets("button_3.png"))
+        self.cal_risk_button = Button(
+            image=self.cal_risk_image,
+            borderwidth=5,
+            highlightthickness=5,
+            command=lambda: print("button_3 clicked"),
+            relief="flat"
+        )
+        self.cal_risk_button.place(
+            x=69.0,
+            y=534.0,
+            width=117.0,
+            height=38.0
+        )
+
+        # next button
+
+        self.next_button_image = PhotoImage(
+            file=self.relative_to_assets("button_4.png"))
+        self.next_button = Button(
+            image=self.next_button_image,
+            borderwidth=5,
+            highlightthickness=5,
+            command=lambda: print("button_4 clicked"),
+            relief="flat"
+        )
+        self.next_button.place(
+            x=212.0,
+            y=133.0,
+            width=159.0,
+            height=62.0
+        )
+        # play/pause button
+        self.play_image = PhotoImage(
+            file=self.relative_to_assets("button_5.png"))
+
+        self.pause_image = PhotoImage(
+            file=self.relative_to_assets("Button.png"))
+
+        self.play_pause_button = Button(
+            image=self.play_image,
+            borderwidth=5,
+            highlightthickness=5,
+            command=self.switch_button,
+            relief="flat"
+        )
+        self.play_pause_button.pack(pady=50)
+        self.play_pause_button.place(
+            x=46.0,
+            y=133.0,
+            width=159.0,
+            height=62.0
+        )
+
+        # Save Report Button Info
+        self.save_report_image = PhotoImage(
+            file=self.relative_to_assets("button_8.png"))
+        self.save_report_button = Button(
+            image=self.save_report_image,
+            borderwidth=5,
+            highlightthickness=5,
+            command=lambda: print("button_8 clicked"),
+            relief="flat"
+        )
+        self.save_report_button.place(
+            x=317.0,
+            y=6.0,
+            width=107.0,
+            height=39.0
+        )
+
+        """
+            Radio Buttons Are Here
+        """
+        # Radio Button Limit and Market
+        self.limit_radio = Radiobutton(
             text="Limit",
-            variable=self.order_type,
-            value="limit"
+            value="limit",
+            command=lambda: self.switch_market_mode(False),
         )
-        self.limit_radiobutton.grid(row=4, column=0, columnspan=2, sticky="nsew")
+        self.limit_radio.place(
+            x=36.0,
+            y=295.0,
+            width=70.0,
+            height=30.0
+        )
 
-        self.market_radiobutton = tk.Radiobutton(
-            self,
-            bg=config.background_color,
-            fg=config.textarea_color,
-            selectcolor=config.background_color,
+        self.market_radio = Radiobutton(
             text="Market",
-            variable=self.order_type,
-            value="market",
-        ).grid(row=4, column=2, columnspan=2, sticky="nsew")
-
-        # Create entry box for limit orders
-        self.limit_price = tk.Entry(
-            self,
-            borderwidth=0,
-            bg=config.button_color_light,
-            fg=config.color_grey)
-        self.limit_price.insert(0, " ")
-        self.limit_price.grid(row=5, column=0, columnspan=3, sticky="nsew", padx=5)
-
-        self.limit_copy_button = tk.Button(
-            self,
-            text="LAST",
-            borderwidth=0,
-            bg=config.button_color,
-            fg=config.color_grey,
-            font=self.font_small
+            value="Market",
+            command=lambda: self.switch_market_mode(True),
         )
-        self.limit_copy_button["command"] = self.copy_last
-        self.limit_copy_button.grid(row=5, column=3, columnspan=1, sticky="nsew")
-
-        self.current_position_label = tk.Label(
-            self,
-            text="Current Position",
-            anchor="w",
-            bg=config.background_color,
-            fg=config.color_grey, font=self.font_small
-        ).grid(row=6, column=0, columnspan=4, sticky="nsew")
-
-        self.current_position_value_label = tk.Label(
-            self,
-            textvariable=self.current_position_value,
-            anchor="w",
-            bg=config.button_color_light,
-            fg=config.color_dark_grey
-        ).grid(row=7, column=0, columnspan=3, sticky="nsew")
-
-        self.current_position_pnl_label = tk.Label(
-            self,
-            textvariable=self.current_position_pnl,
-            anchor="e",
-            bg=config.button_color_light,
-            fg=config.color_dark_grey
-        ).grid(row=7, column=3, columnspan=1, sticky="nsew")
-
-        self.account_value_label = tk.Label(
-            self,
-            text="Account value",
-            anchor="w",
-            bg=config.background_color,
-            fg=config.color_grey,
-            font=self.font_small
-        ).grid(row=8, column=0, columnspan=4, sticky="nsew")
-
-        self.account_value_value_label = tk.Label(
-            self,
-            textvariable=self.account_value_text,
-            bg=config.button_color_light,
-            fg=config.color_white,
-            anchor="w"
-        ).grid(row=9, column=0, columnspan=3, sticky="nsew")
-
-        self.account_value_pnl_label = tk.Label(
-            self,
-            textvariable=self.account_value_pnl,
-            bg=config.button_color_light,
-            fg=config.color_dark_grey,
-            anchor="e"
-        ).grid(row=9, column=3, columnspan=1, sticky="nsew")
-
-        self.trade_history_label = tk.Label(
-            self,
-            text="Trades",
-            anchor="w",
-            bg=config.background_color,
-            fg=config.color_grey,
-            font=self.font_small
-        ).grid(row=10, column=0, columnspan=3, sticky="nsew")
-
-        self.trade_history_clear = tk.Button(
-            self,
-            text="Clear",
-            bg=config.button_color,
-            fg=config.color_grey,
-            font=self.font_small,
-            borderwidth=0
+        self.market_radio.place(
+            x=124.0,
+            y=294.0,
+            width=80.0,
+            height=30.0
         )
-        self.trade_history_clear.grid(row=10, column=3, columnspan=1, sticky="nsew")
-        self.trade_history_clear['command'] = self.clear_list
 
-        self.trade_history_list = tk.Listbox(
-            self,
-            fg=config.color_grey,
-            bg=config.textarea_color,
-            borderwidth=0)
-        self.trade_history_list.grid(row=11, column=0, columnspan=4, sticky="nsew")
+        """
+            Entry Are Here
+        """
 
-    # Write Timestamp to csv file
-    write([time.strftime("%Y-%m-%d %H:%M")])
+        # stop loss Entry
+        self.entry_image_1 = PhotoImage(
+            file=self.relative_to_assets("entry_1.png"))
+        self.canvas.create_image(
+            244.0,
+            410.0,
+            image=self.entry_image_1
+        )
+        self.stop_loss_entry = Entry(
+            bd=0,
+            bg=config.entry_bg_color,
+            highlightthickness=0
+        )
+        self.stop_loss_entry.place(
+            x=128.0,
+            y=397.0,
+            width=232.0,
+            height=24.0
+        )
 
-    # Start of Functions
-    def message_box(self):
-        messagebox.showinfo('Error', 'Sorry! Limit orders are not currently implemented.\n'
-                                     'You can check progress here:\n'
-                                     'https://github.com/Robswc/tradingview-trainer/issues/5')
-        self.order_type.set('market')
+        # take profit Entry
+        self.entry_image_2 = PhotoImage(
+            file=self.relative_to_assets("entry_2.png"))
+        self.canvas.create_image(
+            244.0,
+            441.0,
+            image=self.entry_image_2
+        )
+        self.take_profit_entry = Entry(
+            bd=0,
+            bg=config.entry_bg_color,
+            highlightthickness=0
+        )
+        self.take_profit_entry.place(
+            x=128.0,
+            y=428.0,
+            width=232.0,
+            height=24.0
+        )
 
-    # Generic function to show error
-    def show_error(self, cause, exception, message):
-        messagebox.showerror(str(cause), str(str(exception) + '\n' + message))
-        driver.get("https://github.com/Robswc/tradingview-trainer/wiki/Errors")
+        # order Volume Entry
+        self.entry_image_3 = PhotoImage(
+            file=self.relative_to_assets("entry_3.png"))
+        self.canvas.create_image(
+            244.0,
+            472.0,
+            image=self.entry_image_3
+        )
+        self.order_vol_entry = Entry(
+            bd=0,
+            bg=config.entry_bg_color,
+            highlightthickness=0
+        )
+        self.order_vol_entry.place(
+            x=128.0,
+            y=459.0,
+            width=232.0,
+            height=24.0
+        )
 
-    def clear_list(self):
-        clear_csv()
-        self.update_labels()
+        # Risk amount Entry
+        self.entry_image_4 = PhotoImage(
+            file=self.relative_to_assets("entry_4.png"))
+        self.canvas.create_image(
+            244.0,
+            503.0,
+            image=self.entry_image_4
+        )
+        self.risk_entry = Entry(
+            bd=0,
+            bg=config.entry_bg_color,
+            highlightthickness=0
+        )
+        self.risk_entry.place(
+            x=128.0,
+            y=490.0,
+            width=232.0,
+            height=24.0
+        )
 
-    def get_ticker(self):
-        # ticker = driver.find_element_by_xpath(
-        #    '/html/body/div[1]/div[1]/div[3]/div[1]/div/table/tr[1]/td[2]/div/div[3]/div[1]/span[2]/div/div[1]/div'
-        # ).text
-        try:
-            ticker = driver.find_element_by_xpath(
-                '/html/body/div[1]/div[1]/div[3]/div[1]/div/table/tr[1]/td[2]/div/div[2]/div[1]/div[1]/div[1]/div[1]'
-            ).text
-            ticker = str(ticker).split(' ')
+        # limit price entry
+        self.entry_image_5 = PhotoImage(
+            file=self.relative_to_assets("entry_5.png"))
+        self.canvas.create_image(
+            244.0,
+            379.0,
+            image=self.entry_image_5
+        )
+        self.limit_price_entry = Entry(
+            bd=0,
+            bg=config.entry_bg_color,
+            highlightthickness=0
+        )
+        self.limit_price_entry.place(
+            x=128.0,
+            y=366.0,
+            width=232.0,
+            height=24.0
+        )
 
-            print(ticker[0])
-            return str(ticker[0])
-        except:
-            return 'None'
+        # position history box
+        self.position_box = Listbox(
+            bd=0,
+            bg=config.entry_bg_color,
+            highlightthickness=0
+        )
+        self.position_box.place(
+            x=10.0,
+            y=603.0,
+            width=405.0,
+            height=111.0
+        )
 
-    def get_price_data(self, request):
-        try:
-            if request == 'o':
-                return float(driver.find_element_by_xpath(
-                    '/html/body/div[2]/div[1]/div[2]/div[1]/div/table/tr[1]/td[2]/div/div[1]/div[1]/div[1]/div[2]/div/div[2]/div[2]'
-                ).text)
+        """
+            Text Areas Are Here
+        """
 
-            if request == 'h':
-                return float(driver.find_element_by_xpath(
-                    '/html/body/div[2]/div[1]/div[2]/div[1]/div/table/tr[1]/td[2]/div/div[1]/div[1]/div[1]/div[2]/div/div[3]/div[2]'
-                ).text)
+        self.canvas.create_text(
+            36.0,
+            71.0,
+            anchor="nw",
+            text="Initial Balance:",
+            fill=config.textarea_color,
+            font=("Ubuntu Regular", 13 * -1)
+        )
 
-            if request == 'l':
-                return float(driver.find_element_by_xpath(
-                    '/html/body/div[2]/div[1]/div[2]/div[1]/div/table/tr[1]/td[2]/div/div[1]/div[1]/div[1]/div[2]/div/div[4]/div[2]'
-                ).text)
+        self.canvas.create_text(
+            144.0,
+            71.0,
+            anchor="nw",
+            text="1500\n",
+            fill=config.textarea_color,
+            font=("Ubuntu Regular", 13 * -1)
+        )
 
-            if request == 'c':
-                return float(driver.find_element_by_xpath(
-                    '/html/body/div[2]/div[1]/div[2]/div[1]/div/table/tr[1]/td[2]/div/div[1]/div[1]/div[1]/div[2]/div/div[5]/div[2]'
-                ).text)
-        except:
-            return 0
+        self.canvas.create_text(
+            144.0,
+            88.0,
+            anchor="nw",
+            text="1875",
+            fill=config.textarea_color,
+            font=("Ubuntu Regular", 13 * -1)
+        )
 
-    def get_limit_price(self):
-        self.limit_price.get()
+        self.canvas.create_text(
+            144.0,
+            105.0,
+            anchor="nw",
+            text="+ 25%",
+            fill=config.profit_color,
+            font=("Ubuntu Regular", 13 * -1)
+        )
 
-    def get_position_pnl(self):
-        if get_position()['quantity'] < 0:
-            pnl_percent = ((get_position()['entry'] - self.get_last_price()) / get_position()['entry']) * 100
-        if get_position()['quantity'] > 0:
-            pnl_percent = ((self.get_last_price() - get_position()['entry']) / self.get_last_price()) * 100
+        self.canvas.create_text(
+            36.0,
+            88.0,
+            anchor="nw",
+            text="Total Balance:",
+            fill=config.textarea_color,
+            font=("Ubuntu Regular", 13 * -1)
+        )
 
-        try:
-            return round(pnl_percent, 2)
-        except:
-            return 0
+        self.canvas.create_text(
+            36.0,
+            106.0,
+            anchor="nw",
+            text="Profit/Loss:",
+            fill=config.textarea_color,
+            font=("Ubuntu Regular", 13 * -1)
+        )
 
-    # Doesn't seem to work :(
-    def add_marker(self):
-        pass
-        # actions = ActionChains(driver)
-        # element = driver.find_element_by_xpath('/html/body/div[1]/div[1]/div[3]/div[1]/div/table/tr[1]')
-        # element.click()
-        # actions.click(element).key_down(Keys.ALT, 'v').perform()
+        self.canvas.create_text(
+            30.0,
+            493.0,
+            anchor="nw",
+            text="Risk  %",
+            fill=config.textarea_color,
+            font=("Ubuntu Regular", 13 * -1)
+        )
 
-    def update_labels(self):
+        self.canvas.create_text(
+            135.0,
+            327.0,
+            anchor="nw",
+            text="Order Details ",
+            fill=config.textarea_color,
+            font=("Viga Regular", 18 * -1)
+        )
 
-        # update all labels via tk StringVar()
-        self.last_price_value.set(str(self.get_last_price()))
-        self.current_position_pnl.set(str(self.get_position_pnl()) + '%')
-        self.account_value_pnl.set(
-            str(round(percent_change(get_account_value(), float(config.initial_amount)), 2)) + '%')
-        self.current_position_value.set(str(get_position()['quantity']) + " @ " + str(get_position()['entry']))
-        self.account_value_text.set(locale.currency(get_account_value(), grouping=True))
-        self.ticker_value.set(self.get_ticker())
+        self.canvas.create_text(
+            200.0,
+            534.0,
+            anchor="nw",
+            text="R:R = 1.8\n",
+            fill=config.textarea_color,
+            font=("Ubuntu Regular", 14 * -1)
+        )
 
-        # Update trade history box
-        self.trade_history_list.delete(0, 'end')
-        for trade in read_all():
-            self.trade_history_list.insert(0, trade)
+        self.canvas.create_text(
+            200.0,
+            549.0,
+            anchor="nw",
+            text="Vol calculated = 1.8\n",
+            fill=config.textarea_color,
+            font=("Ubuntu Regular", 14 * -1)
+        )
 
-    # get last price via xpath
-    def get_last_price(self):
-        try:
-            last_price = driver.find_element_by_xpath(
-                '/html/body/div[2]/div[1]/div[2]/div[1]/div/table/tr[1]/td[2]/div/div[1]/div[1]/div[1]/div[2]/div/div[4]/div[2]'
-            ).text
-            return float(last_price)
-        except:
-            try:
-                last_price = driver.find_element_by_xpath(config.custom_xpath_last_price).text
-                return float(last_price)
-            except Exception as error:
-                pass
+        self.canvas.create_text(
+            18.0,
+            586.0,
+            anchor="nw",
+            text="Position History",
+            fill=config.textarea_color,
+            font=("Ubuntu Regular", 14 * -1)
+        )
 
-    #              self.show_error('last_value', str(error), 'Please report error here: ')
+        self.canvas.create_text(
+            30.0,
+            368.0,
+            anchor="nw",
+            text="Limit Price",
+            fill=config.textarea_color,
+            font=("Ubuntu Regular", 14 * -1)
+        )
 
-    # function to pass buy order to order engine.
-    def order_buy(self):
-        oe = OrderEngine
-        if self.order_type.get() == 'market':
-            oe.market(OrderEngine, round(get_account_value(), 2), self.get_last_price())
-        if self.order_type.get() == 'limit':
-            print('LIMIT BIMIT ORDER HEHEH')
-            oe.limit(OrderEngine, round(get_account_value(), 2), float(self.limit_price.get()), self.get_last_price())
-        self.update_labels()
+        self.canvas.create_text(
+            31.0,
+            401.0,
+            anchor="nw",
+            text="Stop Loss",
+            fill=config.textarea_color,
+            font=("Ubuntu Regular", 14 * -1)
+        )
 
-    # function to pass sell order to order engine.
-    def order_sell(self):
-        oe = OrderEngine
-        if self.order_type.get() == 'market':
-            print(type(get_account_value()), type(self.get_last_price()))
-            oe.market(OrderEngine, round(get_account_value(), 2) * -1, float(self.get_last_price()))
-        if self.order_type.get() == 'limit':
-            oe.limit(OrderEngine, get_account_value() * -1, float(self.limit_price.get()), self.get_last_price())
-        self.update_labels()
+        self.canvas.create_text(
+            30.0,
+            431.0,
+            anchor="nw",
+            text="Take Profit",
+            fill=config.textarea_color,
+            font=("Ubuntu Regular", 14 * -1)
+        )
 
-    # Check with the order engine to see if there is a limit order.
-    def limit_check(self):
-        oe = OrderEngine
-        oe.on_tick(OrderEngine,
-                   self.get_price_data('o'),
-                   self.get_price_data('h'),
-                   self.get_price_data('l'),
-                   self.get_price_data('c')
-                   )
-        global is_playing
-        print(str(is_playing.get()))
+        self.canvas.create_text(
+            30.0,
+            461.0,
+            anchor="nw",
+            text="Order Volume",
+            fill=config.textarea_color,
+            font=("Ubuntu Regular", 14 * -1)
+        )
 
-        if str(is_playing.get()) == "▮▮":
-            print(str(is_playing.get()))
-            self.after(500, self.limit_check)
 
-    # Function to auto-fill last price into limit price.
-    def copy_last(self):
-        self.limit_price.delete(0, "end")
-        self.limit_price.insert(0, self.last_price_value.get())
+def relative_to_assets(path: str) -> Path:
+    OUTPUT_PATH = Path(__file__).parent
+    ASSETS_PATH = OUTPUT_PATH / Path("./assets")
+    return ASSETS_PATH / Path(path)
 
-    # Click next bar w/selenium, use functions to grab values.
-    def next_bar(self):
-        print(self.limit_price.get())
-        global is_playing
-        try:
-            driver.find_element_by_xpath('/html/body/div[5]/div/div[2]/div[3]').click()
-        except:
-            try:
-                driver.find_element_by_xpath(config.custom_xpath_replay).click()
-            except:
-                self.show_error('next_bar', 'xpath error', 'Please report error here: ')
-
-        is_playing.set("▶")
-        self.limit_check()
-        self.update_labels()
-        print('>>')
-
-    # Function to click the play-replay with selenium, check for limit orders.
-    def play_replay(self):
-        global is_playing
-        self.update_labels()
-        try:
-            driver.find_element_by_xpath('/html/body/div[5]/div/div[2]/div[2]').click()
-        except Exception:
-            driver.find_element_by_xpath(config.custom_xpath_play_replay).click()
-        print(str(is_playing.get()))
-        if str(is_playing.get()) == "▶":
-            is_playing.set("▮▮")
-            print(str(is_playing))
-            self.limit_check()
-        else:
-            is_playing.set("▶")
-            print(str(is_playing))
+# Create tkinter window/app
+window = Tk()
+window.title('PTV - Paper Trading View (by Ali)')
+window["bg"] = config.bg_color
+window.attributes('-topmost', True)
+window.geometry("424x784")
+window.resizable(False, False)
+img = PhotoImage(file=relative_to_assets('iconnn.png'))
+window.tk.call('wm', 'iconphoto', window._w, img)
+app = Application(window)
+app['bg'] = config.bg_color
+app.configure()
+app.mainloop()
