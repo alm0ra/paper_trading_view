@@ -5,7 +5,7 @@
 ![GitHub repo size](https://img.shields.io/github/repo-size/xibalbas/paper_trading_view)
 
 # PTV
-
+paper trading view is project written for simulate trade in Demo it use trading view when bar reply is enable.  
 as you know trading view doesn't have paper trading on bar reply and we prepare it for you in this project, PTV provide you a demo account for upgrade your skill in trading 
 
 ## Features
