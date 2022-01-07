@@ -1,7 +1,12 @@
 ![Alt text](logo.png)
+#PTV
+
+![GitHub](https://img.shields.io/github/license/xibalbas/paper_trading_view)
+![GitHub contributors](https://img.shields.io/github/contributors/xibalbas/paper_trading_view)
+![GitHub repo size](https://img.shields.io/github/repo-size/xibalbas/paper_trading_view?style=for-the-badge)
 as you know trading view doesn't have paper trading on bar reply and we prepare it for you in this project
 
-# Features
+## Features
 - [x] **Based on Python 3.7+**: For botting on any operating system - Windows, macOS and Linux.
 - [x] **work with TradingView**: For bar reply and getting price we use trading view.
 - [x] **Limit/Market orders**: you can place a Limit or Market order in 2 side "long", "Short" .
