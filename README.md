@@ -1,4 +1,4 @@
-# PTV
+![Alt text](logo.png)
 as you know trading view doesn't have paper trading on bar reply and we prepare it for you in this project
 
 # Features
