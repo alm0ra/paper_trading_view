@@ -1,6 +1,8 @@
 ![Alt text](logo.png)
 
 ![GitHub](https://img.shields.io/github/license/xibalbas/paper_trading_view)
+![GitHub all releases](https://img.shields.io/github/downloads/xibalbas/paper_trading_view/total)
+
 ![GitHub contributors](https://img.shields.io/github/contributors/xibalbas/paper_trading_view)
 ![GitHub repo size](https://img.shields.io/github/repo-size/xibalbas/paper_trading_view)
 
