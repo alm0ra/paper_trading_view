@@ -20,7 +20,7 @@ sleep = 2
 
 # URLS
 signin_url = "https://www.tradingview.com/#signin"
-
+report_path = './output/trade_report.csv'
 # Colors
 textarea_color = "#000000"
 bg_color = "#FFFFFF"
@@ -48,3 +48,5 @@ close_price_xpath = '/html/body/div[2]/div[1]/div[2]/div[1]/div/table/tr[1]/td[2
 
 last_price_xpath = '/html/body/div[2]/div[1]/div[2]/div[1]/div/table/tr[1]/td[2]/div/div[1]/div[1]/div[1]/div[2]/' \
                    'div/div[5]/div[2]'
+
+symbol_xpath = '//*[@id="header-toolbar-symbol-search"]/div'
