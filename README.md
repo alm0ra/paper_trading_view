@@ -1,9 +1,9 @@
 ![Alt text](logo.png)
-#PTV
+# PTV
 
 ![GitHub](https://img.shields.io/github/license/xibalbas/paper_trading_view)
 ![GitHub contributors](https://img.shields.io/github/contributors/xibalbas/paper_trading_view)
-![GitHub repo size](https://img.shields.io/github/repo-size/xibalbas/paper_trading_view?style=for-the-badge)
+![GitHub repo size](https://img.shields.io/github/repo-size/xibalbas/paper_trading_view)
 as you know trading view doesn't have paper trading on bar reply and we prepare it for you in this project
 
 ## Features
