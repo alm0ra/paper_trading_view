@@ -1,4 +1,5 @@
 import pandas as pd
+import config
 
 
 class TradeEngine:
@@ -25,7 +26,7 @@ class TradeEngine:
         for trade in self.trade_list:
             self.csv_template = self.csv_template.append(trade, ignore_index=True)
 
-        self.csv_template.to_csv('./out.csv')
+        self.csv_template.to_csv(config.report_path)
 
     def clean_all(self):
         """
@@ -41,7 +42,7 @@ class TradeEngine:
         """
         self.open_orders = []
 
-    def check_orders(self, high, low):
+    def check_orders(self, high, low, close):
         """
             Check all Limit orders with every candle and if executed it wil be known as a position
         """
@@ -64,28 +65,42 @@ class TradeEngine:
                         if high > enter_price:
                             order["order_status"] = "BadOrdering(10001)"
 
-    def check_positions(self, high, low):
+    def check_positions(self, high, low, close):
         """
             Check all open positions with every candle and if closed it wil be known as a Trade in Trade History
         """
         for position in self.open_positions:
             sl = float(position["stop_loss"])
             tp = float(position["take_profit"])
+            enter_price = float(position["enter_price"])
             side = position["side"]
 
             if side == "long":
 
+                # check if Stop loss Take profit hit
                 if low <= sl <= high or low < sl:
+                    position["unrealized_profit_loss"] =0
                     self.close_position(position=position, closed_price=sl)
-                if low <= tp <= high or high > tp:
+                elif low <= tp <= high or high > tp:
+                    position["unrealized_profit_loss"] = 0
                     self.close_position(position=position, closed_price=tp)
+                else:
+                    # check unrealized profit status
+                    position["unrealized_profit_loss"] = round((close - enter_price) /enter_price * 100, 2)
 
             if side == "short":
+                # check unrealized profit status
 
+                # check if Stop loss Take profit hit
                 if low <= sl <= high or high > sl:
+                    position["unrealized_profit_loss"] = 0
                     self.close_position(position=position, closed_price=sl)
-                if low <= tp <= high or low < tp:
+                elif low <= tp <= high or low < tp:
+                    position["unrealized_profit_loss"] = 0
                     self.close_position(position=position, closed_price=tp)
+                else:
+                    # check unrealized profit status
+                    position["unrealized_profit_loss"] = round((enter_price - close) / enter_price * 100, 2)
 
     def place_market_order(self, symbol: str, entry_price: float, sl: float, tp: float, volume: float,
                            commission: float, side: str) -> None:
@@ -169,7 +184,7 @@ class TradeEngine:
             Get all Trade and add profits or losses to account balance
         """
         for trade in self.trade_list:
-            account_balance += float(trade["realized_profit_loss"])
+            account_balance += round(float(trade["realized_profit_loss"]), 2)
 
         return account_balance
 
@@ -199,59 +214,60 @@ class TradeEngine:
             if closed_price == sl:
 
                 position["trade_status"] = "sl_hit"
-                position["realized_profit_loss"] = - volume * (entry_price - sl) / entry_price
-                position["realized_profit_loss_percent"] = - (entry_price - sl) / entry_price * 100
-                position["final_volume"] = volume - volume * (entry_price - sl) / entry_price
+                position["realized_profit_loss"] = round(- volume * (entry_price - sl) / entry_price, 2)
+                position["realized_profit_loss_percent"] = round(- (entry_price - sl) / entry_price * 100, 2)
+                position["final_volume"] = round(volume - volume * (entry_price - sl) / entry_price, 2)
 
             elif closed_price == tp:
                 position["trade_status"] = "tp_hit"
-                position["realized_profit_loss"] = volume * (tp - entry_price) / entry_price
-                position["realized_profit_loss_percent"] = (tp - entry_price) / entry_price * 100
-                position["final_volume"] = volume + volume * (tp - entry_price) / entry_price
+                position["realized_profit_loss"] = round(volume * (tp - entry_price) / entry_price, 2)
+                position["realized_profit_loss_percent"] = round((tp - entry_price) / entry_price * 100, 2)
+                position["final_volume"] = round(volume + volume * (tp - entry_price) / entry_price, 2)
 
             else:
                 position["trade_status"] = "closed"
 
                 if closed_price > entry_price:
 
-                    position["realized_profit_loss"] = volume * (closed_price - entry_price) / entry_price
-                    position["realized_profit_loss_percent"] = (closed_price - entry_price) / entry_price * 100
-                    position["final_volume"] = volume + volume * (closed_price - entry_price) / entry_price
+                    position["realized_profit_loss"] = round(volume * (closed_price - entry_price) / entry_price, 2)
+                    position["realized_profit_loss_percent"] = round((closed_price - entry_price) / entry_price * 100, 2)
+                    position["final_volume"] = round(volume + volume * (closed_price - entry_price) / entry_price, 2)
 
                 else:
-                    position["realized_profit_loss"] = - volume * (entry_price - closed_price) / entry_price
-                    position["realized_profit_loss_percent"] = - (entry_price - closed_price) / entry_price * 100
-                    position["final_volume"] = volume - volume * (entry_price - closed_price) / entry_price
+                    position["realized_profit_loss"] = round(- volume * (entry_price - closed_price) / entry_price, 2)
+                    position["realized_profit_loss_percent"] = round(- (entry_price - closed_price) / entry_price * 100, 2)
+                    position["final_volume"] = round(volume - volume * (entry_price - closed_price) / entry_price, 2)
 
         if side == "short":
 
             if closed_price == sl:
 
-                position["trade_status"] = "sl_hitted"
-                position["realized_profit_loss"] = - volume * (sl - entry_price) / entry_price
-                position["realized_profit_loss_percent"] = - (sl - entry_price) / entry_price * 100
-                position["final_volume"] = volume - volume * (sl - entry_price) / entry_price
+                position["trade_status"] = "sl_hit"
+                position["realized_profit_loss"] = round(- volume * (sl - entry_price) / entry_price, 2)
+                position["realized_profit_loss_percent"] = round(- (sl - entry_price) / entry_price * 100, 2)
+                position["final_volume"] = round(volume - volume * (sl - entry_price) / entry_price, 2)
 
             elif closed_price == tp:
-                position["trade_status"] = "tp_hitted"
-                position["realized_profit_loss"] = volume * (entry_price - tp) / entry_price
-                position["realized_profit_loss_percent"] = (entry_price - tp) / entry_price * 100
-                position["final_volume"] = volume + volume * (entry_price - tp) / entry_price
+                position["trade_status"] = "tp_hit"
+                position["realized_profit_loss"] = round(volume * (entry_price - tp) / entry_price, 2)
+                position["realized_profit_loss_percent"] = round((entry_price - tp) / entry_price * 100, 2)
+                position["final_volume"] = round(volume + volume * (entry_price - tp) / entry_price, 2)
 
             else:
                 position["trade_status"] = "closed"
 
                 if closed_price > entry_price:
 
-                    position["realized_profit_loss"] = - volume * (closed_price - entry_price) / entry_price
-                    position["realized_profit_loss_percent"] = - (closed_price - entry_price) / entry_price * 100
-                    position["final_volume"] = volume - volume * (closed_price - entry_price) / entry_price
+                    position["realized_profit_loss"] = round(- volume * (closed_price - entry_price) / entry_price, 2)
+                    position["realized_profit_loss_percent"] = round(- (closed_price - entry_price) / entry_price * 100, 2)
+                    position["final_volume"] = round(volume - volume * (closed_price - entry_price) / entry_price, 2)
 
                 else:
 
-                    position["realized_profit_loss"] = volume * (entry_price - closed_price) / entry_price
-                    position["realized_profit_loss_percent"] = (entry_price - closed_price) / entry_price * 100
-                    position["final_volume"] = volume + volume * (entry_price - closed_price) / entry_price
+                    position["realized_profit_loss"] = round(volume * (entry_price - closed_price) / entry_price, 2)
+                    position["realized_profit_loss_percent"] = round((entry_price - closed_price) / entry_price * 100, 2)
+                    position["final_volume"] = round(volume + volume * (entry_price - closed_price) / entry_price, 2)
 
         self.trade_list.append(position)
+
 

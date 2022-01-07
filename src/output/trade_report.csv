@@ -1,0 +1,3 @@
+,symbol,order_status,position_status,side,enter_price,stop_loss,take_profit,volume,commission,unrealized_profit_loss,realized_profit_loss,close_price,trade_status,realized_profit_loss_percent,final_volume,order_type
+0,BTCUSD,BadOrdering(10001),closed,long,32000.0,27000.0,46000.0,128.0,0,0,56.0,46000.0,tp_hit,43.75,184.0,limit
+1,BTCUSD,executed,closed,short,44694.35,50000.0,40000.0,177.91,0,0,-21.12,50000.0,sl_hit,-11.87,156.79,market
