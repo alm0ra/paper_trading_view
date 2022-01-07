@@ -1,10 +1,12 @@
 ![Alt text](logo.png)
-# PTV
 
 ![GitHub](https://img.shields.io/github/license/xibalbas/paper_trading_view)
 ![GitHub contributors](https://img.shields.io/github/contributors/xibalbas/paper_trading_view)
 ![GitHub repo size](https://img.shields.io/github/repo-size/xibalbas/paper_trading_view)
-as you know trading view doesn't have paper trading on bar reply and we prepare it for you in this project
+
+# PTV
+
+as you know trading view doesn't have paper trading on bar reply and we prepare it for you in this project, PTV provide you a demo account for upgrade your skill in trading 
 
 ## Features
 - [x] **Based on Python 3.7+**: For botting on any operating system - Windows, macOS and Linux.
