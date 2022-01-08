@@ -11,12 +11,13 @@ from threading import Thread
 from time import sleep
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver import ActionChains
+from webdriver_manager.chrome import ChromeDriverManager
 
 order_type = None
 process1 = None
 
 try:
-    driver = webdriver.Chrome()
+    driver = webdriver.Chrome(ChromeDriverManager().install())
     driver.get("https://www.tradingview.com/#signin")
     global action, action1
     action = ActionChains(driver)
