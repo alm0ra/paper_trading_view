@@ -11,14 +11,33 @@ from threading import Thread
 from time import sleep
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver import ActionChains
+from selenium.webdriver.chrome.options import Options
+from sys import platform
+import getpass
+import locale
 
 order_type = None
 process1 = None
 
+options = webdriver.ChromeOptions()
+# Set formatting for currency.
+if platform == "win32":
+    # Windows formatting
+    locale.setlocale(locale.LC_ALL, 'English_United States.1252')
+    options.add_argument(f'user-data-dir=C:\\Users\\{getpass.getuser()}\\AppData\\Local\\Google\\Chrome\\User Data\\Default')
+    
+else:
+    # Linux/OS X formatting
+    locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
+    options.add_argument(f'user-data-dir=/home/{getpass.getuser()}/snap/chromium/common/chromium/')
+
+
 try:
-    driver = webdriver.Chrome()
+    driver = webdriver.Chrome(options=options)
+
     driver.get("https://www.tradingview.com/#signin")
     global action, action1
+    
     action = ActionChains(driver)
     action.key_down(Keys.SHIFT)
     action.send_keys(Keys.DOWN)
@@ -32,8 +51,6 @@ try:
 except Exception as e:
     print('+ Error Involving Chrome Driver + \n')
     print(str(e) + '\n')
-    print('Visit: https://github.com/Robswc/tradingview-trainer/wiki/Errors')
-    print('Report this error here: https://github.com/Robswc/tradingview-trainer/issues')
     input()
     quit()
 
