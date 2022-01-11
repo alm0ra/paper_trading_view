@@ -187,30 +187,30 @@ class Application(Frame):
         """
         A method for get price data from trading view
         """
-        # try:
+        try:
 
-        self.open_price = float(driver.find_element_by_xpath(config.open_price_xpath).text)
-        self.high_price = float(driver.find_element_by_xpath(config.high_price_xpath).text)
-        self.low_price = float(driver.find_element_by_xpath(config.low_price_xpath).text)
-        self.close_price = float(driver.find_element_by_xpath(config.close_price_xpath).text)
-        self.symbol = str(driver.find_element_by_xpath(config.symbol_xpath).text)
-        self.last_price = self.close_price
-        self.engine.check_orders(low=self.low_price, high=self.high_price, close=self.close_price)
-        self.engine.check_positions(low=self.low_price, high=self.high_price, close=self.close_price)
-        if self.open_orders_view:
-            self.show_open_order_history()
-        if self.open_positions_view:
-            self.show_open_position_history()
-        if self.trade_history_view:
-            self.show_trade_history()
+            self.open_price = float(driver.find_element_by_xpath(config.open_price_xpath).text)
+            self.high_price = float(driver.find_element_by_xpath(config.high_price_xpath).text)
+            self.low_price = float(driver.find_element_by_xpath(config.low_price_xpath).text)
+            self.close_price = float(driver.find_element_by_xpath(config.close_price_xpath).text)
+            self.symbol = str(driver.find_element_by_xpath(config.symbol_xpath).text)
+            self.last_price = self.close_price
+            self.engine.check_orders(low=self.low_price, high=self.high_price, close=self.close_price)
+            self.engine.check_positions(low=self.low_price, high=self.high_price, close=self.close_price)
+            if self.open_orders_view:
+                self.show_open_order_history()
+            if self.open_positions_view:
+                self.show_open_position_history()
+            if self.trade_history_view:
+                self.show_trade_history()
 
-        self.calculate_profit_loss()
+            self.calculate_profit_loss()
 
-        print(self.close_price)
-        return True
-        # except:
-        #     self.show_error('Get data', 'Xpath error', 'failed to get data ')
-        #     return False
+            print(self.close_price)
+            return True
+        except:
+            self.show_error('Get data', 'Xpath error', 'failed to get data ')
+            return False
 
 
     # action for play button while chart is playing
@@ -233,11 +233,11 @@ class Application(Frame):
         if not self.play_button:
             self.switch_button()
 
-        # try:
-        action1.perform()
-        self.get_price_data()
-        # except:
-        #     self.show_error('Next Bar', 'Xpath error', 'Please report your error')
+        try:
+            action1.perform()
+            self.get_price_data()
+        except:
+            self.show_error('Next Bar', 'Xpath error', 'Please report your error')
 
 
     # Risk calculate Action
