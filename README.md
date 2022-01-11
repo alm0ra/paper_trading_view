@@ -6,10 +6,16 @@
 ![GitHub repo size](https://img.shields.io/github/repo-size/xibalbas/paper_trading_view)
 ![GitHub top language](https://img.shields.io/github/languages/top/xibalbas/paper_trading_view)
 
-# PTV
+# PTV (paper-trading-view)
 paper trading view is project written for simulate trade in Demo it use trading view when bar reply is enable.  
 as you know trading view doesn't have paper trading on bar reply and we prepare it for you in this project, PTV provide you a demo account for upgrade your skill in trading 
 
+## Why?
+
+
+# How It Works
+
+![howwork](./assets/how_work.gif)
 ## Features
 - [x] **Based on Python 3.7+**: For botting on any operating system - Windows, macOS and Linux.
 - [x] **work with TradingView**: For bar reply and getting price we use trading view.
@@ -23,6 +29,7 @@ as you know trading view doesn't have paper trading on bar reply and we prepare 
 - [x] **profit/loss of account**: your total profit / loss calculate when your position close.
 - [x] **save report**: you can save your trade history in a csv file.
 
+
 # Requirements
 
 * Python 3.7+ (install it from [website](https://www.python.org/downloads/))
@@ -30,7 +37,7 @@ as you know trading view doesn't have paper trading on bar reply and we prepare 
 * selenium ,tkinter
 
 # Getting start
-make sure you installed python3.7+
+make sure you installed [python3.7+](https://www.python.org/downloads/)
 ```bash
 git clone https://github.com/xibalbas/paper_trading_view.git
 cd paper_trading_view/src
@@ -39,7 +46,13 @@ cd paper_trading_view/src
 ```bash
 pip install virtualenv
 virtualenv venv
+
+# Linux Users
 source venv/bin/activate
+
+# Windows Users
+.\venv\Scripts\activate
+
 ```
 #### install requirements packages
 ```bash
