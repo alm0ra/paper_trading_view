@@ -15,7 +15,8 @@ as you know trading view doesn't have paper trading on bar reply and we prepare 
 
 # How It Works
 
-![howwork](./assets/how_work.gif)
+![howwork](./src/assets/how_work.gif)
+
 ## Features
 - [x] **Based on Python 3.7+**: For botting on any operating system - Windows, macOS and Linux.
 - [x] **work with TradingView**: For bar reply and getting price we use trading view.
