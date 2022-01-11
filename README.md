@@ -10,7 +10,8 @@
 paper trading view is project written for simulate trade in Demo it use trading view when bar reply is enable.  
 as you know trading view doesn't have paper trading on bar reply and we prepare it for you in this project, PTV provide you a demo account for upgrade your skill in trading 
 
-## Why?
+# Why?
+this feature does not exist in [TradingView](tradingview.com) . you can use it for train , backtest youre strategies 
 
 
 # How It Works
