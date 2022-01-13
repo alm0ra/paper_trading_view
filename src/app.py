@@ -1,5 +1,5 @@
 # Create main app tkinter frame.
-# from src.app import account_value
+
 import config
 from tkinter import *
 from tkinter import ttk
@@ -24,7 +24,7 @@ options = webdriver.ChromeOptions()
 if platform == "win32":
     # Windows formatting
     locale.setlocale(locale.LC_ALL, 'English_United States.1252')
-    options.add_argument(f'user-data-dir=C:\\Users\\{getpass.getuser()}\\AppData\\Local\\Google\\Chrome\\User Data\\Default')
+    options.add_argument(f'user-data-dir=C:\\Users\\{getpass.getuser()}\\AppData\\Local\\Google\\Chrome\\User Data')
     
 else:
     # Linux/OS X formatting
@@ -71,13 +71,11 @@ class Application(Frame):
         self.initial_account = 1000
         self.final_account = self.initial_account
         self.commission = 0
-        self.symbol = "BTC/USDT"
-        # TODO add symbol
+        self.symbol = "BTCUSDT"
         self.close_price = 57500
         self.first_time = True
         self.status = None
         self.p1 = None
-        # self.loop = asyncio.get_event_loop()
         self.entry_image_2 = None
         self.save_report_image = None
         self.next_button_image = None
@@ -1371,7 +1369,7 @@ def relative_to_assets(path: str) -> Path:
 
 # Create tkinter window/app
 window = Tk()
-window.title('PTV - Paper Trading View (by Ali)')
+window.title('PTV - Paper Trading View (by xibalbas | github)')
 window["bg"] = config.bg_color
 window.attributes('-topmost', True)
 window.geometry("424x784")
