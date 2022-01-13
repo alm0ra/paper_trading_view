@@ -57,10 +57,10 @@ pip install virtualenv
 python -m venv venv
 
 # Linux Users
-source venv/bin/activate.bat
+source venv/bin/activate
 
 # Windows Users
-.\venv\Scripts\activate
+.\venv\Scripts\activate.bat
 
 ```
 #### install requirements packages
