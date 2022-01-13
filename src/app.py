@@ -218,11 +218,13 @@ class Application(Frame):
             out = self.get_price_data()
             if not self.status :
                 break
-            # if not out:
-            #     # self.play_pause_button.config(image=self.play_image)
-            #     # self.play_button = True
-            #     # self.status = False
-            #     break
+            if not out:
+                self.play_pause_button.config(image=self.play_image)
+                self.play_button = True
+                self.status = False
+                global action
+                action.perform()
+                break
 
     # Next bar action
     def next_bar_action(self):
