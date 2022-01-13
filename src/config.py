@@ -37,14 +37,19 @@ play_pause_button_xpath = '/html/body/div[5]/div/div[2]/div[2]'
 open_price_xpath = '/html/body/div[2]/div[1]/div[2]/div[1]/div/table/tr[1]/td[2]/div/div[1]/div[1]/div[1]/div[2]' \
                    '/div/div[2]/div[2]'
 
+open_price_xpath_2 = '//div[@class="valuesAdditionalWrapper-1WIwNaDF"]/div[2]/div[2]'
+
 high_price_xpath = '/html/body/div[2]/div[1]/div[2]/div[1]/div/table/tr[1]/td[2]/div/div[1]/div[1]/div[1]/div[2]/' \
                    'div/div[3]/div[2]'
+high_price_xpath_2 = '//div[@class="valuesAdditionalWrapper-1WIwNaDF"]/div[3]/div[2]'
 
 low_price_xpath = '/html/body/div[2]/div[1]/div[2]/div[1]/div/table/tr[1]/td[2]/div/div[1]/div[1]/div[1]/div[2]/' \
                   'div/div[4]/div[2]'
+low_price_xpath_2 = '//div[@class="valuesAdditionalWrapper-1WIwNaDF"]/div[4]/div[2]'
 
 close_price_xpath = '/html/body/div[2]/div[1]/div[2]/div[1]/div/table/tr[1]/td[2]/div/div[1]/div[1]/div[1]/div[2]/' \
                     'div/div[5]/div[2]'
+close_price_xpath_2 = '//div[@class="valuesAdditionalWrapper-1WIwNaDF"]/div[5]/div[2]'
 
 last_price_xpath = '/html/body/div[2]/div[1]/div[2]/div[1]/div/table/tr[1]/td[2]/div/div[1]/div[1]/div[1]/div[2]/' \
                    'div/div[5]/div[2]'
