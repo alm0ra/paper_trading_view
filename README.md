@@ -1,7 +1,6 @@
 ![Alt text](logo.png)
 
 ![GitHub](https://img.shields.io/github/license/xibalbas/paper_trading_view)
-![GitHub all releases](https://img.shields.io/github/downloads/xibalbas/paper_trading_view/total)
 ![GitHub contributors](https://img.shields.io/github/contributors/xibalbas/paper_trading_view)
 ![GitHub repo size](https://img.shields.io/github/repo-size/xibalbas/paper_trading_view)
 ![GitHub top language](https://img.shields.io/github/languages/top/xibalbas/paper_trading_view)
@@ -18,7 +17,20 @@ this feature does not exist in [TradingView](tradingview.com) . you can use it f
 
 ![howwork](./src/assets/how_work.gif)
 
-## Features
+# Quick installation (for windows users)
+1- [Download](https://github.com/xibalbas/paper_trading_view/raw/master/executable_app/executable_win32_v1.0.1.rar) project
+
+you can easily download executable version of this project from this [Link](https://github.com/xibalbas/paper_trading_view/raw/master/executable_app/executable_win32_v1.0.1.rar)
+
+2- make sure you installed chrome browser on your device . go to [tradingview.com](tradingview.com) and login into your account . 
+
+3- Extract `.rar` file and Run `ptv.exe`
+
+
+`Notice: Every time you want to run ptv.exe make sure chrome is closed before.`
+
+
+# Features
 - [x] **Based on Python 3.7+**: For botting on any operating system - Windows, macOS and Linux.
 - [x] **work with TradingView**: For bar reply and getting price we use trading view.
 - [x] **Limit/Market orders**: you can place a `Limit` or `Market` order in 2 side "long", "Short" .
