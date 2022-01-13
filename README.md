@@ -18,6 +18,8 @@ this feature does not exist in [TradingView](https://www.tradingview.com/) . you
 ![howwork](./src/assets/how_work.gif)
 
 # Quick installation (for windows users)
+
+
 1- [Download](https://github.com/xibalbas/paper_trading_view/raw/master/executable_app/executable_win32_v1.0.1.rar) project
 
 you can easily download executable version of this project from this [Link](https://github.com/xibalbas/paper_trading_view/raw/master/executable_app/executable_win32_v1.0.1.rar)
@@ -26,6 +28,7 @@ you can easily download executable version of this project from this [Link](http
 
 3- Extract `.rar` file and Run `ptv.exe`
 
+[Quick installation tutorial video](https://youtu.be/zW962uAD4TU)
 
 `Notice: Every time you want to run ptv.exe make sure chrome is closed before.`
 
