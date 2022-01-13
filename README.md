@@ -41,16 +41,23 @@ this feature does not exist in [TradingView](tradingview.com) . you can use it f
 # Getting start
 make sure you installed [python3.7+](https://www.python.org/downloads/)
 ```bash
+# you can clone project from github
 git clone https://github.com/xibalbas/paper_trading_view.git
 cd paper_trading_view/src
+
+# or
+# you can download project zip file and extract 
+https://github.com/xibalbas/paper_trading_view/archive/refs/heads/master.zip
+cd paper_trading_view-master/src
+
 ```
 #### make an enviorment
 ```bash
 pip install virtualenv
-virtualenv venv
+python -m venv venv
 
 # Linux Users
-source venv/bin/activate
+source venv/bin/activate.bat
 
 # Windows Users
 .\venv\Scripts\activate
