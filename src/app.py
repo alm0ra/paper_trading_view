@@ -186,15 +186,36 @@ class Application(Frame):
         A method for get price data from trading view
         """
         try:
-
-            self.open_price = float(driver.find_element_by_xpath(config.open_price_xpath).text)
-            self.high_price = float(driver.find_element_by_xpath(config.high_price_xpath).text)
-            self.low_price = float(driver.find_element_by_xpath(config.low_price_xpath).text)
-            self.close_price = float(driver.find_element_by_xpath(config.close_price_xpath).text)
-            self.symbol = str(driver.find_element_by_xpath(config.symbol_xpath).text)
+            try:
+                self.open_price = float(driver.find_element_by_xpath(config.open_price_xpath).text)
+            except:
+                self.open_price = float(driver.find_element_by_xpath(config.open_price_xpath_2).text)
+            
+            try:
+                self.high_price = float(driver.find_element_by_xpath(config.high_price_xpath).text)
+            except:
+                self.high_price = float(driver.find_element_by_xpath(config.high_price_xpath_2).text)
+            
+            try:
+                self.low_price = float(driver.find_element_by_xpath(config.low_price_xpath).text)
+            except:
+                self.low_price = float(driver.find_element_by_xpath(config.low_price_xpath_2).text)
+            
+            try:
+                self.close_price = float(driver.find_element_by_xpath(config.close_price_xpath).text)
+            except:
+                self.close_price = float(driver.find_element_by_xpath(config.close_price_xpath_2).text)
+                
+            try: 
+                self.symbol = str(driver.find_element_by_xpath(config.symbol_xpath).text)
+            except:
+                pass
+            
+            
             self.last_price = self.close_price
             self.engine.check_orders(low=self.low_price, high=self.high_price, close=self.close_price)
             self.engine.check_positions(low=self.low_price, high=self.high_price, close=self.close_price)
+            
             if self.open_orders_view:
                 self.show_open_order_history()
             if self.open_positions_view:
@@ -541,70 +562,76 @@ class Application(Frame):
 
     def show_trade_history(self):
         count = 0
-        self.trade_history_view.delete(*self.trade_history_view.get_children())
-        for trade in self.engine.trade_list:
-            self.trade_history_view.insert(parent='',
-                                           index='end',
-                                           iid=count,
-                                           text="",
-                                           values=(
-                                                trade["symbol"],
-                                                trade["side"],
-                                                trade["enter_price"],
-                                                trade["stop_loss"],
-                                                trade["take_profit"],
-                                                trade["volume"],
-                                                trade["close_price"],
-                                                trade["trade_status"],
-                                                trade["realized_profit_loss"],
-                                                trade["realized_profit_loss_percent"],
-                                                trade["order_type"],
-                                            ))
-            count += 1
-
+        try:
+            self.trade_history_view.delete(*self.trade_history_view.get_children())
+            for trade in self.engine.trade_list:
+                self.trade_history_view.insert(parent='',
+                                            index='end',
+                                            iid=count,
+                                            text="",
+                                            values=(
+                                                    trade["symbol"],
+                                                    trade["side"],
+                                                    trade["enter_price"],
+                                                    trade["stop_loss"],
+                                                    trade["take_profit"],
+                                                    trade["volume"],
+                                                    trade["close_price"],
+                                                    trade["trade_status"],
+                                                    trade["realized_profit_loss"],
+                                                    trade["realized_profit_loss_percent"],
+                                                    trade["order_type"],
+                                                ))
+                count += 1
+        except:
+            pass
     def show_open_order_history(self):
         count = 0
-        self.open_orders_view.delete(*self.open_orders_view.get_children())
-        for order in self.engine.open_orders:
-            self.open_orders_view.insert(parent='',
-                                           index='end',
-                                           iid=count,
-                                           text="",
-                                           values=(
-                                                order["symbol"],
-                                                order["side"],
-                                                order["enter_price"],
-                                                order["stop_loss"],
-                                                order["take_profit"],
-                                                order["volume"],
-                                                order["order_status"],
-                                                order["position_status"],
-                                                order["order_type"],
-                                            ))
-            count +=1
-
+        try:
+            self.open_orders_view.delete(*self.open_orders_view.get_children())
+            for order in self.engine.open_orders:
+                self.open_orders_view.insert(parent='',
+                                            index='end',
+                                            iid=count,
+                                            text="",
+                                            values=(
+                                                    order["symbol"],
+                                                    order["side"],
+                                                    order["enter_price"],
+                                                    order["stop_loss"],
+                                                    order["take_profit"],
+                                                    order["volume"],
+                                                    order["order_status"],
+                                                    order["position_status"],
+                                                    order["order_type"],
+                                                ))
+                count +=1
+        except:
+            pass
     def show_open_position_history(self):
         count = 0
-        self.open_positions_view.delete(*self.open_positions_view.get_children())
-        for position in self.engine.open_positions:
-            self.open_positions_view.insert(parent='',
-                                         index='end',
-                                         iid=count,
-                                         text="",
-                                         values=(
-                                             position["symbol"],
-                                             position["side"],
-                                             position["enter_price"],
-                                             position["stop_loss"],
-                                             position["take_profit"],
-                                             position["volume"],
-                                             position["order_status"],
-                                             position["position_status"],
-                                             position["order_type"],
-                                             position["unrealized_profit_loss"],
-                                         ))
-            count += 1
-
+        try:
+            self.open_positions_view.delete(*self.open_positions_view.get_children())
+            for position in self.engine.open_positions:
+                self.open_positions_view.insert(parent='',
+                                            index='end',
+                                            iid=count,
+                                            text="",
+                                            values=(
+                                                position["symbol"],
+                                                position["side"],
+                                                position["enter_price"],
+                                                position["stop_loss"],
+                                                position["take_profit"],
+                                                position["volume"],
+                                                position["order_status"],
+                                                position["position_status"],
+                                                position["order_type"],
+                                                position["unrealized_profit_loss"],
+                                            ))
+                count += 1
+        except:
+            pass
     def trade_history_action(self):
         self.trade_history_windows = Toplevel()
         self.trade_history_windows.title('PTV - Trade History')
