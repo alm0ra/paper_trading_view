@@ -68,6 +68,7 @@ cd paper_trading_view-master/src
 ```
 #### make an enviorment
 ```bash
+sudo apt-get install python3-tk
 pip install virtualenv
 python -m venv venv
 
