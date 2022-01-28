@@ -25,15 +25,17 @@ if platform == "win32":
     # Windows formatting
     locale.setlocale(locale.LC_ALL, 'English_United States.1252')
     options.add_argument(f'user-data-dir=C:\\Users\\{getpass.getuser()}\\AppData\\Local\\Google\\Chrome\\User Data')
+    executable_path = './chromedriver.exe'
     
 else:
     # Linux/OS X formatting
     locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
     options.add_argument(f'user-data-dir=/home/{getpass.getuser()}/snap/chromium/common/chromium/')
+    executable_path = './chromedriver'
 
 
 try:
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Chrome(executable_path=executable_path,options=options)
 
     driver.get("https://www.tradingview.com/#signin")
     global action, action1
